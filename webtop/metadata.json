@@ -15,5 +15,5 @@
     "bug_url": "https://github.com/NethServer/dev",
     "code_url": "https://github.com/NethServer/ns8-webtop/"
   },
-  "source": "ghcr.io/nethserver/webtop:latest"
+  "source": "ghcr.io/nethserver/webtop"
 }
