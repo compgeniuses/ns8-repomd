@@ -1,0 +1,19 @@
+{
+  "name": "webtop",
+  "description": {
+    "en": "Webtop module"
+  },
+  "categories": [],
+  "authors": [
+    {
+      "name": "Matteo Valentini",
+      "email": "matteo.valentini@nethesis.it"
+    }
+  ],
+  "docs": {
+    "documentation_url": "https://docs.nethserver.org/en/latest/webtop5.html",
+    "bug_url": "https://github.com/NethServer/dev",
+    "code_url": "https://github.com/NethServer/ns8-webtop/"
+  },
+  "source": "ghcr.io/nethserver/webtop:latest"
+}
