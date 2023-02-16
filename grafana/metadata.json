@@ -3,7 +3,7 @@
   "description": {
     "en": "Query, visualize, and alert on data"
   },
-  "categories": [],
+  "categories": ["monitoring"],
   "authors": [
     {
       "name": "Giacomo Sanchietti",

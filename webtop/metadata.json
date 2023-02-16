@@ -3,7 +3,7 @@
   "description": {
     "en": "Webtop module"
   },
-  "categories": [],
+  "categories": ["collaboration"],
   "authors": [
     {
       "name": "Matteo Valentini",

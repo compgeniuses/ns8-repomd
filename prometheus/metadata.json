@@ -3,7 +3,7 @@
   "description": {
     "en": "Prometheus module"
   },
-  "categories": [],
+  "categories": ["monitoring"],
   "authors": [
     {
       "name": "Giacomo Sanchietti",
