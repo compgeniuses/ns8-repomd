@@ -8,42 +8,28 @@ on:
 jobs:
   repomd:
     runs-on: ubuntu-20.04
+    env:
+      DO_SPACE_NAME: 'distfeed-nextsecurity'
+      DO_SPACE_REGION: 'fra1'
+      CDN_DOMAIN: 'distfeed.nethserver.org'
     steps:
     - id: checkout
       uses: actions/checkout@v2
 
-    - id: gitconfig
-      run: |
-        # Configure git environment
-        git config user.name nethbot
-        git config user.email nethbot@nethesis.it
-
     - id: buildmd
-      run: bash createrepo.sh
+      run: |
+        bash createrepo.sh
+        rm -rf README.md createrepo.py createrepo.sh .git .github
 
     - id: publish
       name: "Publish the repository metadata"
-      run: |
-        BRANCH=$(basename ${{ github.ref }})
-        COMMIT_MESSAGE="repomd@$BRANCH"
-        REMOTE_BRANCH="repomd"
-        if [[ "${BRANCH}" != "main" ]]; then
-            echo "Skipping metadata publication for branch '${BRANCH}'"
-            exit 0
-        fi
-        mkdir -p .dst
-        mv repodata.json .dst/
-        cp -a $(ls -d */) .dst/
-        git add .dst/
-        TREE=$(git write-tree --prefix=.dst)
-        COMMIT=$(git commit-tree -m "${COMMIT_MESSAGE}" ${TREE})
-        git push -f origin $COMMIT:refs/heads/${REMOTE_BRANCH}
-        echo "Repository metadata has been published to"
-        echo ""
-        echo "    https://raw.githubusercontent.com/${{ github.repository }}/${REMOTE_BRANCH}/repodata.json"
-        echo ""
-        echo "Source"
-        echo ""
-        echo "    https://github.com/${{ github.repository }}/tree/${REMOTE_BRANCH}"
-        echo ""
-
+      uses: BetaHuhn/do-spaces-action@v2
+      if: ${{ github.ref == 'refs/heads/main' }}
+      with:
+        access_key: ${{ secrets.DO_SPACE_ACCESS_KEY }}
+        secret_key: ${{ secrets.DO_SPACE_SECRET_KEY }}
+        space_name: ${{ env.DO_SPACE_NAME }}
+        space_region: ${{ env.DO_SPACE_REGION }}
+        cdn_domain: ${{ env.CDN_DOMAIN }}
+        source: .
+        out_dir: ns8/updates/
