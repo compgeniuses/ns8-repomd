@@ -34,6 +34,7 @@ import imghdr
 import semver
 import subprocess
 import glob
+import urllib.request
 
 path = '.'
 index = []
@@ -75,10 +76,19 @@ for entry_path in glob.glob(path + '/*'): # do not match .git and similar
 
     version_labels = {}
     metadata_file = os.path.join(entry_name, "metadata.json")
-    if os.path.isfile(metadata_file):
-        with open(metadata_file) as metadata_fp:
-            # merge defaults and JSON file, the latter one has precedence
-            metadata = {**metadata, **json.load(metadata_fp)}
+
+    # local file overrides the remote one
+    # if a file is not present, download from git repository:
+    # assume the source package is hosted on GithHub under NethServer organization
+    if not os.path.isfile(metadata_file):
+        url = f'https://raw.githubusercontent.com/NethServer/ns8-{metadata["name"]}/main/ui/public/metadata.json'
+        res = urllib.request.urlopen(urllib.request.Request(url))
+        with open(metadata_file, 'wb') as metadata_fpw:
+             metadata_fpw.write(res.read())
+
+    with open(metadata_file) as metadata_fp:
+        # merge defaults and JSON file, the latter one has precedence
+        metadata = {**metadata, **json.load(metadata_fp)}
 
     # add logo if the file is present and it's a PNG
     logo = os.path.join(entry_name, "logo.png")
