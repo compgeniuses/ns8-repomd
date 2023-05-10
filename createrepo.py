@@ -101,10 +101,11 @@ for entry_path in glob.glob(path + '/*'): # do not match .git and similar
             res = urllib.request.urlopen(urllib.request.Request(url))
             with open(logo, 'wb') as logo_fpw:
                 logo_fpw.write(res.read())
-            if imghdr.what(logo) == "png":
-                metadata["logo"] = "logo.png"
         except:
             pass
+
+    if os.path.isfile(logo) and imghdr.what(logo) == "png":
+        metadata["logo"] = "logo.png"
 
     # add screenshots if pngs are available inside the screenshots directory
     screenshot_dirs = os.path.join(entry_name, "screenshots")
