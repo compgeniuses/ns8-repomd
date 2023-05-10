@@ -81,6 +81,7 @@ for entry_path in glob.glob(path + '/*'): # do not match .git and similar
     # if a file is not present, download from git repository:
     # assume the source package is hosted on GithHub under NethServer organization
     if not os.path.isfile(metadata_file):
+        print(f'Downloading metadata for {metadata["name"]}')
         url = f'https://raw.githubusercontent.com/NethServer/ns8-{metadata["name"]}/main/ui/public/metadata.json'
         res = urllib.request.urlopen(urllib.request.Request(url))
         with open(metadata_file, 'wb') as metadata_fpw:
@@ -90,11 +91,20 @@ for entry_path in glob.glob(path + '/*'): # do not match .git and similar
         # merge defaults and JSON file, the latter one has precedence
         metadata = {**metadata, **json.load(metadata_fp)}
 
-    # add logo if the file is present and it's a PNG
+    # download logo if not present
+    # add it only if it's a PNG
     logo = os.path.join(entry_name, "logo.png")
-    if os.path.isfile(logo):
-        if imghdr.what(logo) == "png":
-            metadata["logo"] = "logo.png"
+    if not os.path.isfile(logo):
+        print(f'Downloading logo for {metadata["name"]}')
+        url = f'https://raw.githubusercontent.com/NethServer/ns8-{metadata["name"]}/main/ui/src/assets/module_default_logo.png'
+        try:
+            res = urllib.request.urlopen(urllib.request.Request(url))
+            with open(logo, 'wb') as logo_fpw:
+                logo_fpw.write(res.read())
+            if imghdr.what(logo) == "png":
+                metadata["logo"] = "logo.png"
+        except:
+            pass
 
     # add screenshots if pngs are available inside the screenshots directory
     screenshot_dirs = os.path.join(entry_name, "screenshots")
