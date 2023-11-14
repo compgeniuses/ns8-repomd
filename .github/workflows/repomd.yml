@@ -19,7 +19,33 @@ jobs:
     - id: buildmd
       run: |
         bash createrepo.sh
-        rm -rf README.md createrepo.py createrepo.sh .git .github
+
+    - id: lpublish
+      name: "Publish metadata on GitHub"
+      if: ${{ github.ref == 'refs/heads/main' }}
+      run: |
+        git config user.name nethbot
+        git config user.email nethbot@nethesis.it
+        BRANCH=$(basename ${{ github.ref }})
+        COMMIT_MESSAGE="repomd@$BRANCH"
+        REMOTE_BRANCH="repomd"
+        mkdir -p .dst
+        mv repodata.json .dst/
+        cp -a $(ls -d */) .dst/
+        git add .dst/
+        TREE=$(git write-tree --prefix=.dst)
+        COMMIT=$(git commit-tree -m "${COMMIT_MESSAGE}" ${TREE})
+        git push -f origin $COMMIT:refs/heads/${REMOTE_BRANCH}
+        echo "Repository metadata has been published to"
+        echo ""
+        echo "    https://raw.githubusercontent.com/${{ github.repository }}/${REMOTE_BRANCH}/repodata.json"
+        echo ""
+        echo "Source"
+        echo ""
+        echo "    https://github.com/${{ github.repository }}/tree/${REMOTE_BRANCH}"
+        echo ""
+
+    - run: rm -rf README.md createrepo.py createrepo.sh .git .github .dst
 
     - id: publish
       name: "Publish the repository metadata"
