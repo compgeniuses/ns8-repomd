@@ -36,16 +36,16 @@ jobs:
         TREE=$(git write-tree --prefix=.dst)
         COMMIT=$(git commit-tree -m "${COMMIT_MESSAGE}" ${TREE})
         git push -f origin $COMMIT:refs/heads/${REMOTE_BRANCH}
-        echo "Repository metadata has been published to"
-        echo ""
-        echo "    https://raw.githubusercontent.com/${{ github.repository }}/${REMOTE_BRANCH}/repodata.json"
-        echo ""
-        echo "Source"
-        echo ""
-        echo "    https://github.com/${{ github.repository }}/tree/${REMOTE_BRANCH}"
-        echo ""
-
-    - run: rm -rf README.md createrepo.py createrepo.sh .git .github .dst
+        {
+          echo "Repository metadata has been published to"
+          echo ""
+          echo "https://raw.githubusercontent.com/${{ github.repository }}/${REMOTE_BRANCH}/repodata.json"
+          echo ""
+          echo "Source"
+          echo ""
+          echo "https://github.com/${{ github.repository }}/tree/${REMOTE_BRANCH}"
+          echo ""
+        } >> $GITHUB_STEP_SUMMARY
 
     - id: publish
       name: "Publish the repository metadata"
